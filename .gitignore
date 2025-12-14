@@ -1,0 +1,62 @@
+# --- Go build artifacts ---
+/bin/
+/build/
+/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# --- Módulos y vendor (opcional) ---
+# Descomenta si NO quieres commitear vendor
+# /vendor/
+
+# --- Logs y dumps ---
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# --- Cobertura / perfiles de test ---
+coverage.out
+coverage.txt
+*.cover
+*.coverprofile
+*.prof
+
+# --- Configuración local / secretos ---
+.env
+.env.*
+*.local.yaml
+*.local.yml
+config/*.local.*
+config/*.dev.*
+config/*.secret.*
+
+# --- IDEs / editores ---
+# VS Code
+.vscode/
+
+# JetBrains (GoLand, IntelliJ, etc.)
+.idea/
+*.iml
+
+# Otros editores
+*.code-workspace
+
+# --- Sistema operativo ---
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux / genéricos
+*~
