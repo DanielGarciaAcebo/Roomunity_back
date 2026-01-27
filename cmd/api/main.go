@@ -2,11 +2,11 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	platformdb "roomunity_back/internal/platform/db"
+	middleware "roomunity_back/internal/platform/http"
 )
 
 func main() {
@@ -29,17 +29,22 @@ func main() {
 
 	log.Println("✅ Successfully connected to database")
 
-	// Minimal HTTP handler for the root path
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		n, err := fmt.Fprintf(w, "Roomunity_back listening on port %s\n", port)
-		log.Println("written bytes:", n, "err:", err)
+	// Create HTTP multiplexer (router)
+	mux := http.NewServeMux()
+
+	// Root handler (simple text to verify the server is running)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		_, err := w.Write([]byte("Roomunity_back listening on port " + port + "\n"))
+		if err != nil {
+			log.Printf("error writing response: %v", err)
+		}
 	})
 
-	// Log where the server is running
-	log.Printf("Server listening at http://localhost:%s\n", port)
+	handler := middleware.WithCORS(mux)
 
-	// Start HTTP server
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+	log.Printf("Server listening at http://localhost:%s\n", port)
+	// Start HTTP server (only ONE ListenAndServe)
+	if err := http.ListenAndServe(":"+port, handler); err != nil {
+		log.Fatalf("server failed: %v", err)
 	}
 }
