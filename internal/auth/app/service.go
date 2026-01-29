@@ -1,19 +1,31 @@
 package app
 
-// AuthService holds the business logic for authentication.
-type AuthService struct{}
+import (
+	"errors"
 
-// NewAuthService creates a new AuthService instance.
-func NewAuthService() *AuthService {
-	return &AuthService{}
+	"roomunity_back/internal/auth/domain"
+)
+
+type AuthService struct {
+	users domain.UserRepository
 }
 
-func (s *AuthService) Register(username, password string) error {
-	// No real persistence yet, just pretend it's OK.
-	return nil
+func NewAuthService(users domain.UserRepository) *AuthService {
+	return &AuthService{users: users}
 }
 
-// Login checks if the provided credentials match the hardcoded user.
-func (s *AuthService) Login(username, password string) bool {
-	return username == "Wild" && password == "123abc"
+func (s *AuthService) Login(username, password string) (*domain.User, error) {
+	u, err := s.users.FindByUsername(username)
+	if err != nil {
+		if errors.Is(err, domain.ErrUserNotFound) {
+			return nil, nil
+		}
+		return nil, err // real error
+	}
+
+	if u.PasswordHash != password {
+		return nil, nil
+	}
+
+	return u, nil
 }

@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"roomunity_back/internal/platform/bootstrap"
+
 	platformdb "roomunity_back/internal/platform/db"
 	middleware "roomunity_back/internal/platform/http"
 )
@@ -29,18 +31,9 @@ func main() {
 
 	log.Println("✅ Successfully connected to database")
 
-	// Create HTTP multiplexer (router)
-	mux := http.NewServeMux()
+	mux := bootstrap.BuildMux(db)
 
-	// Root handler (simple text to verify the server is running)
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		_, err := w.Write([]byte("Roomunity_back listening on port " + port + "\n"))
-		if err != nil {
-			log.Printf("error writing response: %v", err)
-		}
-	})
-
-	handler := middleware.WithCORS(mux)
+	handler := middleware.WithCORS(middleware.WithRequestLogging(mux))
 
 	log.Printf("Server listening at http://localhost:%s\n", port)
 	// Start HTTP server (only ONE ListenAndServe)
